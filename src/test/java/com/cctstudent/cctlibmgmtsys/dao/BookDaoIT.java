@@ -5,6 +5,7 @@
 package com.cctstudent.cctlibmgmtsys.dao;
 
 import com.cctstudent.cctlibmgmtsys.model.Book;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -46,13 +47,17 @@ public class BookDaoIT {
     @Test
     public void testGet() {
         System.out.println("get");
-        UUID id = null;
+        UUID id = UUID.fromString("c107bc4d-a63b-4303-92e2-ffa1f7a218c6");
+        //c107bc4d-a63b-4303-92e2-ffa1f7a218c6,Phillipe,Francombe,Remo Williams: The Adventure Begins,Action|Comedy|Crime|Thriller
+        
         BookDao instance = new BookDao();
         Optional<Book> expResult = null;
+        Book test = new Book(id,"Phillipe", "Francombe", "Remo Williams: The Adventure Begins", "Action|Comedy|Crime|Thriller" );
+        expResult = Optional.ofNullable(test);
         Optional<Book> result = instance.get(id);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //fail("The test case is a prototype.");
     }
 
     /**
@@ -63,25 +68,37 @@ public class BookDaoIT {
         System.out.println("getAll");
         BookDao instance = new BookDao();
         //Set<Book> expResult = null;
-        Set<Book> result = instance.getAll();
-                
-        assertTrue(result.size() > 0);
-        //assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Set<Book> result = instance.getAll();                        
+        assertEquals( true, (0 < result.size()), "error " + result.size());
+        
     }
+    
+     @Test
+    public void testGetAllDesc() {
+        System.out.println("getAllDesc");
+        BookDao instance = new BookDao();
+        //Set<Book> expResult = null;
+        Iterator<Book> result = instance.getAllDesc();
+        assertEquals( true, result.hasNext(), "GetAllDesc error " + result.hasNext());        
+    }
+    
+    
 
     /**
      * Test of save method, of class BookDao.
      */
     @Test
     public void testSave() {
-        System.out.println("save");
-        Book g = null;
+        System.out.println("save");        
+        Book g = new Book(UUID.fromString("5f7b55c1-58c7-4e99-82d4-030a62c8de0c"),"Magdaia","Surgood","Gunless","Action|Comedy|Drama|Western");
         BookDao instance = new BookDao();
-        instance.save(g);
+        //5f7b55c1-58c7-4e99-82d4-030a62c8de0c,Magdaia,Surgood,Gunless,Action|Comedy|Drama|Western        
+        assertFalse(instance.save(g),"Fail testSave False ");
+        
+        g = new Book(UUID.randomUUID(),"fn","ln","title","Action|Comedy|Drama|Western");
+        assertTrue(instance.save(g),"Fail testSave True");        
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //fail("The test case is a prototype.");
     }
 
     /**

@@ -11,7 +11,7 @@ import java.util.UUID;
  *
  * @author 2022057 Marliclere Santos
  */
-public class Book {
+public class Book  {
     private UUID id;
     private String authorFirstName;
     private String authorLastName;
@@ -95,6 +95,16 @@ public class Book {
         }
         return Objects.equals(this.bookTitle, other.bookTitle);
     }
+
+    @Override
+    public String toString() {
+        return "Book{" + "id=" + id + ", authorFirstName=" + authorFirstName + ", authorLastName=" + authorLastName + ", bookTitle=" + bookTitle + ", genre=" + genre + '}';
+    }
     
+    
+    public String toDatabase()
+    {
+        return  id.toString() + "," + authorFirstName + "," + authorLastName + "," + bookTitle + "," + genre ;
+    }
  
 }

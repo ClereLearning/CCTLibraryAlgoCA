@@ -6,9 +6,11 @@ package com.cctstudent.cctlibmgmtsys.dao;
 
 import com.cctstudent.cctlibmgmtsys.model.Book;
 import java.util.Set;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -21,15 +23,17 @@ public class BookDaoTest {
     /**
      * Test of getAll method, of class BookDao.
      */
-    @Test
+    @Test    
+    @DisplayName("GetAll Book - Bigger than zero ")
     public void testGetAll() {
         System.out.println("getAll");
         BookDao instance = new BookDao();
         //Set<Book> expResult = null;
-        Set<Book> result = instance.getAll();
-        assertFalse(result.isEmpty());        
+        Set<Book> result = instance.getAll();        
+        assertEquals( true, (0 < result.size()), "error " + result.size());              
+        
         //assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype. ");
+        //fail("The test case is a prototype. ");
     }
 }
