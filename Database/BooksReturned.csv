@@ -1,0 +1,2 @@
+id, BorrowingId, bookId, studentId, employeeId, ReturnedDate, StartTime
+713b70a6-3567-4220-a760-da303c139f1b,d3003cb6-4f0f-410d-9550-a228dd349785,70a1f65c-d026-4a75-a6b3-2dd276eb9c46,d6360e0f-48e8-401d-b481-f4e41fe9744b,d6360e0f-48e8-401d-b481-f4e41fe9744b,2023-08-03,16:24:37.858541700

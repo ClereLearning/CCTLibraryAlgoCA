@@ -42,7 +42,43 @@ public class StudentDao implements Dao<Student> {
 
     @Override
     public Optional<Student> get(UUID id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Set<Student> students = getAll();
+        //Optional<Student> studentRet = null;
+        for (Student student : students) {            
+            if(!id.toString().isEmpty())
+            {
+                if(student.getId().toString().toLowerCase().equals(id.toString().toLowerCase()))
+                {
+                    // studentRet =  Optional.ofNullable(student);
+                    //break;
+                    return Optional.of(student);                    
+                }            
+            }
+        }         
+         //return studentRet;  
+         return Optional.empty();
+    }
+    
+    
+      public Optional<Student> getStudentId(String studentId) {
+        Set<Student> students = getAll();
+        //Optional<Student> studentRet = null;
+        for (Student student : students) {            
+            if(!studentId.isEmpty())
+            {
+                if(student.getStudentId().toLowerCase().equals(studentId.toLowerCase()))
+                {
+                    /*
+                    studentRet =  Optional.ofNullable(student);
+                    break;
+                    */
+                    
+                    return Optional.of(student); 
+                }            
+            }
+        }         
+         //return studentRet; 
+         return Optional.empty();
     }
 
     @Override

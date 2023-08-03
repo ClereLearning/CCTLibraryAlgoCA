@@ -126,5 +126,29 @@ public class Borrowing {
         }
         return Objects.equals(this.StartDate, other.StartDate);
     }
+
+    @Override
+    public String toString() {
+        return "Borrowing{" + "id=" + id + ", bookId=" + bookId + ", studentId=" + studentId + ", employeeId=" + employeeId + ", StartDate=" + StartDate + ", StartTime=" + StartTime + ", ReturnDate=" + ReturnDate + ", isReturned=" + isReturned + ", ReturnedDate=" + ReturnedDate + '}';
+    }
+    
+    
+    public String toDatabase() {
+        return  id.toString() + "," + bookId.toString() + "," + studentId.toString() + "," + employeeId.toString() + "," + StartDate.toString() + "," + StartTime.toString() + "," + ReturnDate.toString() + "," + isReturned.toString() + "," + ReturnedDate.toString();
+    }
+
+    public Borrowing(UUID id, UUID bookId, UUID studentId, UUID employeeId, LocalDate StartDate, LocalTime StartTime, LocalDate ReturnDate, Boolean isReturned, LocalDateTime ReturnedDate) {
+        this.id = id;
+        this.bookId = bookId;
+        this.studentId = studentId;
+        this.employeeId = employeeId;
+        this.StartDate = StartDate;
+        this.StartTime = StartTime;
+        this.ReturnDate = ReturnDate;
+        this.isReturned = isReturned;
+        this.ReturnedDate = ReturnedDate;
+    }
+    
+    
     
 }

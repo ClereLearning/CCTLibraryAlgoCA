@@ -55,7 +55,24 @@ public class BookDao implements Dao<Book> {
 
     @Override
     public Optional<Book> get(UUID id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Set<Book> books = getAll();
+        Optional<Book> booksRet = null;
+        
+        for (Book book : books) {
+            //if(book.getBookTitle().contains(title))
+            if(!id.toString().isEmpty())
+            {
+                if((book.getId().toString().toLowerCase().equals(id.toString().toLowerCase())))
+                {
+                   // booksRet = Optional.ofNullable(book);
+                   // break;
+                    return Optional.of(book);
+                }
+            }
+        }         
+        
+        //return booksRet;
+        return Optional.empty();
     }
 
     @Override

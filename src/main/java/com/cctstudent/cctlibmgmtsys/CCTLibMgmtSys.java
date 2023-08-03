@@ -52,15 +52,18 @@ public class CCTLibMgmtSys {
                     break;
                  case 8:                     
                     System.out.println("Option 8 ");
+                    Option8();
                     break;
                  case 9:                     
                     System.out.println("Option 9 ");
                     break;
                  case 10:                     
                     System.out.println("Option 10 ");
+                    Option10();
                     break;
                  case 11:                     
                     System.out.println("Option 11 ");
+                    Option11();
                     break;                    
                  case 12:                     
                     System.out.println("Option 12 ");
@@ -203,5 +206,90 @@ public class CCTLibMgmtSys {
         ViewModel.ListAllStudent();
      }
      
+     public static void Option8()
+     {
+         //8) Register that a student has borrowed a book
+        Scanner input = new Scanner(System.in);
+        
+        System.out.println("Enter the book ID");
+        String bookID = input.next();
+        
+        System.out.println("Enter Student ID");
+        String studentID = input.next(); 
+        
+        if(bookID.trim().length()<1)
+        {
+            System.out.println("Book ID is required");
+            return;
+        }    
+        
+        if(bookID.trim().length()!=36)
+        {
+            System.out.println("Book ID is not correct");
+            return;
+        }        
+        
+        if(studentID.trim().length()<1)
+        {
+            System.out.println("Student ID is required");
+            return;
+        }           
+        
+        ViewModel.BorrowingRegister(studentID.trim(),bookID.trim());
+     }
+     
+     public static void Option10()
+     {
+         //10) Register that a student has returned a book.
+        Scanner input = new Scanner(System.in);                         
+                 
+        System.out.println("Enter the borrowing ID");
+        String borrowingID = input.next();
+        
+        System.out.println("Enter Student ID");
+        String studentID = input.next(); 
+        
+        if(borrowingID.trim().length()<1)
+        {
+            System.out.println("Borrowing ID is required");
+            return;
+        }    
+        
+        if(borrowingID.trim().length()!=36)
+        {
+            System.out.println("Book ID is not correct");
+            return;
+        }        
+        
+        if(studentID.trim().length()<1)
+        {
+            System.out.println("Student ID is required");
+            return;
+        }           
+        
+        ViewModel.BookReturnRegister(studentID.trim(),borrowingID.trim());
+     
+     }
+     
+     public static void Option11()
+     {
+         //11) For a specific student, list the books that they have borrowed
+        System.out.println("Listing the books borrowed by Student");
+        Scanner input = new Scanner(System.in);                         
+        
+        System.out.println("Enter Student ID");
+        String studentID = input.next(); 
+        
+        if(studentID.trim().length()<1)
+        {
+            System.out.println("Student ID is required");
+            return;
+        }           
+        
+        ViewModel.getBooksBorrowingByStudent(studentID.trim());
+        
+         
+         
+     }
      
 }

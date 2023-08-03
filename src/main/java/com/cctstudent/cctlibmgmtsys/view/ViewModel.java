@@ -4,11 +4,20 @@
  */
 package com.cctstudent.cctlibmgmtsys.view;
 
+import static com.cctstudent.cctlibmgmtsys.constants.Constants.BorrowingDays;
 import com.cctstudent.cctlibmgmtsys.dao.BookDao;
+import com.cctstudent.cctlibmgmtsys.dao.BookReturnedDao;
+import com.cctstudent.cctlibmgmtsys.dao.BorrowingDao;
 import com.cctstudent.cctlibmgmtsys.dao.StudentDao;
 import com.cctstudent.cctlibmgmtsys.model.Book;
+import com.cctstudent.cctlibmgmtsys.model.BookReturned;
+import com.cctstudent.cctlibmgmtsys.model.Borrowing;
 import com.cctstudent.cctlibmgmtsys.model.Student;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -124,6 +133,200 @@ public class ViewModel {
         }else{
             System.out.println("Not found");
         }
+    }
+    
+    public Optional<Student> GetStudentByStudentID (String studentID )
+    {
+        StudentDao studentDao = new StudentDao();
+        Optional<Student> student = studentDao.getStudentId(studentID);
+        return student;   
+    }
+    
+    public static Boolean ExistStudentByStudentID (String studentID )
+    {
+        StudentDao studentDao = new StudentDao();
+        Optional<Student> student = studentDao.getStudentId(studentID);
+        if(student!=null)
+        {
+            return true;
+        }else{
+            return false;
+        }        
+    }
+    
+    public static void BorrowingRegister(String studentID , String bookID )
+    {
+        //8) Register that a student has borrowed a book 
+        System.out.println("Borrowing Book Register");
+        BorrowingDao borrowingDao = new BorrowingDao();
+        
+        BookDao bookDao = new BookDao();
+        Optional<Book> bookOpt = bookDao.get(UUID.fromString(bookID.trim()));
+        Book book = bookOpt.isEmpty()? null: bookOpt.get();       
+        if(book==null)
+        {
+            System.out.println("Book ID does not exists. Please verify.");
+            return;
+        }
+        StudentDao studentDao = new StudentDao();
+        //Optional<Student> student = studentDao.get(UUID.fromString(studentID.trim()));
+        Optional<Student> studentOpt = studentDao.getStudentId(studentID.trim());
+        Student student = studentOpt.isEmpty()?null:studentOpt.get();
+       
+         if(student==null)
+        {
+            System.out.println("Student ID does not exists. Please verify.");
+            return;
+        }
+        
+        Boolean ret = false;        
+        if((book!=null) && (student!=null))
+        {
+            System.out.println("Ready to save the Borrowing");
+            UUID id = UUID.randomUUID();            
+            UUID idBook = UUID.fromString(bookID.trim());
+            UUID idStudent = UUID.fromString(student.getId().toString());
+            
+            //System.out.println(bookID.trim());
+            //System.out.println(UUID.fromString(student.getId().toString()));
+            //System.out.println(bookID.trim());
+            
+            LocalDate ReturnDate = LocalDate.now();
+            ReturnDate = ReturnDate.plusDays(BorrowingDays);
+            LocalDate StartDate = LocalDate.now();
+            //StartDate = ReturnDate;
+            Borrowing b = new Borrowing(id, idBook ,idStudent, idStudent,StartDate,LocalTime.now(),ReturnDate, false,LocalDateTime.now());
+            
+            
+            
+            //Borrowing b = new Borrowing(id,UUID.fromString(bookID.trim()), UUID.fromString(student.getId().toString()),UUID.fromString(student.getId().toString()),LocalDate.now(),LocalTime.now(),LocalDate.now(), false,LocalDateTime.now());
+            ret = borrowingDao.save(b);           
+        }
+        
+        if(ret)
+        {
+            System.out.println("Borrowing Book Registered");
+        }else{
+            System.out.println("Borrowing Book failure, it was not registered");
+        }
+    }         
+    
+    public static void BookReturnRegister(String StudentID, String borrowingID)
+    {
+         //10) Register that a student has returned a book.
+        //String studentID =  "q1w2e3";  //"a1s2d3";
+        //String borrowingID = "d3003cb6-4f0f-410d-9550-a228dd349785";        
+        
+        StudentDao studentDao = new StudentDao();
+        //Optional<Student> student = studentDao.get(UUID.fromString(studentID.trim()));
+        Optional<Student> studentOpt = studentDao.getStudentId(StudentID.trim());
+        Student student = studentOpt.isEmpty()?null:studentOpt.get();
+       
+         if(student==null)
+        {
+            System.out.println("Student ID does not exists. Please verify.");
+            return;
+        }
+         
+       
+        BorrowingDao borrowingDao = new BorrowingDao();
+        Optional<Borrowing> boorrowingOpt = borrowingDao.get(UUID.fromString(borrowingID.trim()));
+        Borrowing borrowing = boorrowingOpt.isEmpty()? null: boorrowingOpt.get();       
+        if(borrowing==null)
+        {
+            System.out.println("Borrowing ID does not exists. Please verify.");
+            return;
+        }
+        
+        
+        
+        Boolean ret = false;        
+        if((student!=null) && (borrowing!=null))
+        {
+            
+            if (!borrowing.getStudentId().equals(student.getId()))
+            {
+                System.out.println("Student ID does not match with the Student Borrowing ID. Please verify.");
+                return;
+            }
+            
+            
+            //System.out.println("Ready to save the Returning");
+            UUID id = UUID.randomUUID();  
+            UUID idBook =  borrowing.getBookId();
+            UUID idStudent = UUID.fromString(student.getId().toString());
+            UUID idBorrowing = UUID.fromString(borrowingID.trim());
+           
+            /*
+            System.out.println(idBook.toString());
+            System.out.println(idStudent.toString());
+            System.out.println(idBorrowing.toString());
+              */               
+            LocalDate StartDate = LocalDate.now();
+            
+            BookReturned b = new BookReturned(
+                                    id,
+                                    idBorrowing,
+                                    idBook,
+                                    idStudent,
+                                    idStudent,
+                                    StartDate, 
+                                    LocalTime.now()
+                                    );
+            
+            
+            
+            BookReturnedDao BookReturnedDao = new BookReturnedDao();  
+            Set<BookReturned> booksReturned = BookReturnedDao.getAll();
+           
+            if(booksReturned.add(b)) // already exists?
+            {       
+                BookReturnedDao instance = new BookReturnedDao(); 
+                instance.save(b );
+                System.out.println("Book Returned. Thank you. ");
+            }else{
+               System.out.println("The book was already returned ");
+            }
+        }
+    }
+    
+    public static void getBooksBorrowingByStudent( String StudentId)
+    {
+        //11) For a specific student, list the books that they have borrowed
+        StudentDao studentDao = new StudentDao();        
+        Optional<Student> studentOpt = studentDao.getStudentId(StudentId.trim());
+        Student student = studentOpt.isEmpty()?null:studentOpt.get();
+       
+         if(student==null)
+        {
+            System.out.println("Student ID does not exists. Please verify.");
+            return;
+        }     
+
+        UUID idStudent = student.getId();
+        BorrowingDao borrowingDao = new BorrowingDao();
+        
+         
+        ArrayList<Borrowing> result = borrowingDao.getAllByStudent(idStudent);        
+        Book book = null;
+        BookDao bookDao = new BookDao();
+        
+        
+        if(result!=null)
+        {        
+            for( Borrowing b: result)
+            {
+                Optional<Book> BookOpt = bookDao.get(b.getBookId());
+                book = BookOpt.isEmpty()?null:BookOpt.get();                
+                if(book!=null)
+                {
+                     System.out.println(b.getStartDate() + " - " + book);
+                }               
+            }
+        }else{
+            System.out.println("Not found");        
+        }        
+        
     }
     
 }

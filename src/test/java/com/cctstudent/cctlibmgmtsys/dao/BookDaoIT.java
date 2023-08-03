@@ -53,7 +53,7 @@ public class BookDaoIT {
         BookDao instance = new BookDao();
         Optional<Book> expResult = null;
         Book test = new Book(id,"Phillipe", "Francombe", "Remo Williams: The Adventure Begins", "Action|Comedy|Crime|Thriller" );
-        expResult = Optional.ofNullable(test);
+        expResult = Optional.ofNullable(test);        
         Optional<Book> result = instance.get(id);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
