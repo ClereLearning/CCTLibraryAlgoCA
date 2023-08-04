@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NavigableSet;
 import java.util.Optional;
@@ -30,22 +31,36 @@ import java.util.logging.Logger;
  * @author 2022057 Marliclere Santos
  */
 
- class BookReturnedComparatorByDate implements Comparator<BookReturned>{
+
+// not allowing the same Borrowing Id
+/*
+ class BookReturnedComparatorById implements Comparator<BookReturned>{
 
    @Override
     public int compare(BookReturned b1, BookReturned b2) {
        int one =  b1.getBorrowingId().compareTo(b2.getBorrowingId());
        int two =  b1.getReturnedDate().compareTo(b2.getReturnedDate());     
-       return ( ((one + two) != 0 ) ?1:0);
+       //return ( ((one + two) != 0 ) ?1:0);
+       return one;
     }
  }
-public class BookReturnedDao implements Dao<BookReturned> {
+*/
+/**
+ *
+ * @author Clere
+ */
+public class BookReturnedDao {
 
     private Object System;
 
-    @Override
+    /**
+     * Get details about the Book returned by BookReturned 
+     * @param id
+     * @return
+     */
+    
     public Optional<BookReturned> get(UUID id) {
-        Set<BookReturned> booksReturned = getAll();
+        ArrayList<BookReturned> booksReturned = getAll();
         Optional<BookReturned> booksRet = null;
 
         for (BookReturned bookReturned : booksReturned) 
@@ -61,9 +76,14 @@ public class BookReturnedDao implements Dao<BookReturned> {
         return Optional.empty();
     }
 
-    @Override
-    public Set<BookReturned> getAll() {
-         NavigableSet<BookReturned> booksReturned = new TreeSet<>(new BookReturnedComparatorByDate() );
+    /**
+     *  Get all Book returneds
+     * @return
+     */
+    
+    public ArrayList<BookReturned> getAll() {
+        // NavigableSet<BookReturned> booksReturned = new TreeSet<>(new BookReturnedComparatorById() );
+        ArrayList<BookReturned> booksReturned = new ArrayList<>();
         
         try{
             
@@ -105,44 +125,78 @@ public class BookReturnedDao implements Dao<BookReturned> {
         return booksReturned;
     }
 
-    @Override
+    /**
+     *  Get all Books returned by BookID
+     * @param bookID
+     * @return
+     */
+    public ArrayList<BookReturned> getAllByBookID(UUID bookID)
+    {
+            //helping 9
+            ArrayList<BookReturned> booksReturneds = getAll();
+            ArrayList<BookReturned> ListofBooksRet = new ArrayList<>();
+            
+            if(!bookID.toString().isEmpty())
+            {        
+                    for (BookReturned bookReturned : booksReturneds) 
+                    {            
+                            if(bookReturned.getBookId().equals(bookID))
+                            {
+                                    ListofBooksRet.add(bookReturned);
+                            }            
+                    }
+            }	
+            return ListofBooksRet;	
+    }
+    
+    /**
+     * Get all Books returned by Internal Student ID
+     * @param StudentId
+     * @return
+     */
+    public ArrayList<BookReturned> getAllByStudent(UUID StudentId)
+    {                
+        ArrayList<BookReturned> bookReturneds = getAll();
+        ArrayList<BookReturned> bookReturnedRet =  new ArrayList<>();
+        
+        if(!StudentId.toString().isEmpty())
+        {        
+            for (BookReturned bookReturned : bookReturneds) {            
+                if(bookReturned.getStudentId().equals(StudentId))
+                {
+                    bookReturnedRet.add(bookReturned);
+                }            
+            }
+        }
+        
+        return bookReturnedRet;
+        
+    }
+    
+    /**
+     * Get save the new returned book
+     * @param b
+     * @return
+     */
+
     public Boolean save(BookReturned b) {
         
-        
-        Set<BookReturned> booksReturned = getAll();
-        if(booksReturned.add(b)) // already exists?
-        {
-            String filePath = FilesPath + FileNameBooksReturned;
-            File file = new File(filePath);
-            
-            try(                
-                FileWriter fw = new FileWriter(file, true);
-                BufferedWriter bwr = new BufferedWriter(fw)){ // to optimize
-                bwr.write(b.toDatabase());
-                bwr.newLine(); // avoiding \n dueto other kind of operacional system
-                bwr.flush();
+        String filePath = FilesPath + FileNameBooksReturned;
+        File file = new File(filePath);
 
-            }catch(IOException ex){
-                //System.out.println(ex.getMessage());
-                Logger.getLogger(BookReturnedDao.class.getName()).log(Level.SEVERE, null, ex);
-                    return false;
-            }
-        }else{
-            //System.out.println("x");
-           return false;
+        try(                
+            FileWriter fw = new FileWriter(file, true);
+            BufferedWriter bwr = new BufferedWriter(fw)){ // to optimize
+            bwr.write(b.toDatabase());
+            bwr.newLine(); // avoiding \n dueto other kind of operacional system
+            bwr.flush();
+
+        }catch(IOException ex){
+            //System.out.println(ex.getMessage());
+            Logger.getLogger(BookReturnedDao.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
         }
 
         return true;
     }
-
-    @Override
-    public void update(BookReturned g, String[] infos) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void delete(BookReturned g) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
 }

@@ -32,26 +32,39 @@ import java.util.ArrayList;
  *
  * @author 2022057 Marliclere Santos
  */
+
+//Not allowing a same book in the same day 
+/*
  class BorrowingComparatorByReturnDate implements Comparator<Borrowing>{
 
    @Override
     public int compare(Borrowing b1, Borrowing b2) {
        int one =  b1.getBookId().compareTo(b2.getBookId());
        int two =  b1.getStartDate().compareTo(b2.getStartDate());
+       //int three = b1.getId().compareTo(b2.getId());
        //int three = b1.getStudentId().compareTo(b2.getStudentId()); 
+       //int four = b1.getStartTime().compareTo(b2.getStartTime());
        //System.out.println("Book " + b1.getBookId() + " -> " + one);
        //System.out.println("Date " + b1.getStartDate() + " -> " + two);
-       //System.out.println("StudentId " + b1.getStudentId() + " -> " + three);              
+       //System.out.println("Id " + b1.getBookId() + " -> " + three);              
        //return ( ((one + two + three) != 0 ) ?1:0);       
-       return ( ((one + two) != 0 ) ?1:0);
+       //return ( ((three == -1) || (one == -1) || ( (one + two) != 0 )) ?1:0);
+       return (((one + two) != 0 ) ?1:0);
+       
     }
  }
+*/
 
-public class BorrowingDao implements Dao<Borrowing> {
+public class BorrowingDao {
 
-    @Override
+    /**
+     * Get a book by ID
+     * @param id
+     * @return
+     */
+    
     public Optional<Borrowing> get(UUID id) {
-        Set<Borrowing> borrowings = getAll();
+        ArrayList<Borrowing> borrowings = getAll();
         Optional<Borrowing> booksRet = null;
 
         for (Borrowing borrowing : borrowings) {	
@@ -67,9 +80,15 @@ public class BorrowingDao implements Dao<Borrowing> {
         return Optional.empty();
     }
 
-    @Override
-    public Set<Borrowing> getAll() {
-        NavigableSet<Borrowing> borrowings = new TreeSet<>(new BorrowingComparatorByReturnDate() );
+    /**
+     * Get all borrowing
+     * @return
+     */
+ 
+    public ArrayList<Borrowing> getAll() {
+        //NavigableSet<Borrowing> borrowings = new TreeSet<>(new BorrowingComparatorByReturnDate() );
+        
+        ArrayList<Borrowing>  borrowings = new ArrayList<Borrowing>();
         
         try{
             
@@ -102,10 +121,15 @@ public class BorrowingDao implements Dao<Borrowing> {
         return borrowings;
     }
 
+    /**
+     * Get all borrowing by Internal Student ID
+     * @param StudentId
+     * @return
+     */
     public ArrayList<Borrowing> getAllByStudent(UUID StudentId)
     {
         BorrowingDao instance = new BorrowingDao();        
-        Set<Borrowing> borrowings = instance.getAll();
+        ArrayList<Borrowing> borrowings = instance.getAll();
         ArrayList<Borrowing> borrowingRet =  new ArrayList<>();
         
         if(!StudentId.toString().isEmpty())
@@ -122,43 +146,58 @@ public class BorrowingDao implements Dao<Borrowing> {
         
     }
     
-    
-    @Override
-    public Boolean save(Borrowing b) {
-        Set<Borrowing> Borrowings = getAll();
-        if(Borrowings.add(b)) // already exists?
-        {
-            String filePath = FilesPath + FileNameBorrowing;
-            File file = new File(filePath);            
-            System.out.println("ini");
-            try(
-                FileWriter fw = new FileWriter(file, true);
-                BufferedWriter bwr = new BufferedWriter(fw)){ // to optimize
-                bwr.write(b.toDatabase());
-                bwr.newLine(); // avoiding \n dueto other kind of operacional system
-                bwr.flush();
-                System.out.println("feito");
+    //helping 9
 
-            }catch(IOException ex){
-                //System.out.println(ex.getMessage());
-                Logger.getLogger(BorrowingDao.class.getName()).log(Level.SEVERE, null, ex);
-                    return false;
+    /**
+     * Get all borrowing by Book ID
+     * @param bookID
+     * @return
+     */
+     public ArrayList<Borrowing> getAllByBookID(UUID bookID)
+    {
+        BorrowingDao instance = new BorrowingDao();        
+        ArrayList<Borrowing> borrowings = instance.getAll();
+        ArrayList<Borrowing> borrowingRet =  new ArrayList<>();
+        
+        if(!bookID.toString().isEmpty())
+        {        
+            for (Borrowing borrowing : borrowings) {            
+                if(borrowing.getBookId().equals(bookID))
+                {
+                    borrowingRet.add(borrowing);
+                }            
             }
-        }else{
-           return false;
         }
+        
+        return borrowingRet;
+        
+    }
+    
+    /**
+     * Save the new info about Borrowing book
+     * @param b
+     * @return
+     */
+    
+    public Boolean save(Borrowing b) {
+        ArrayList<Borrowing> Borrowings = getAll();       
+        String filePath = FilesPath + FileNameBorrowing;
+        File file = new File(filePath);            
 
+        try(
+            FileWriter fw = new FileWriter(file, true);
+            BufferedWriter bwr = new BufferedWriter(fw)){ // to optimize
+            bwr.write(b.toDatabase());
+            bwr.newLine(); // avoiding \n dueto other kind of operacional system
+            bwr.flush();
+
+        }catch(IOException ex){
+
+            Logger.getLogger(BorrowingDao.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+        }
+       
         return true;
-    }
-
-    @Override
-    public void update(Borrowing g, String[] infos) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void delete(Borrowing g) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    }    
     
 }

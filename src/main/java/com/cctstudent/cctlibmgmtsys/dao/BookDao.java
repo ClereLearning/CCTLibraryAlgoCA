@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *
  * @author 2022057 Marliclere Santos
  */
-
+// avoing dublication
 class BookComparatorByAuthorFirstName implements Comparator<Book>{
 
     @Override
@@ -40,6 +40,7 @@ class BookComparatorByAuthorFirstName implements Comparator<Book>{
     }    
 }
 
+// organizing by title
 class BookComparatorByBookTitle implements Comparator<Book>{
 
     @Override
@@ -48,11 +49,17 @@ class BookComparatorByBookTitle implements Comparator<Book>{
     }    
 }
 
-
+/**
+ *
+ * @author Clere
+ */
 public class BookDao implements Dao<Book> {
         
-        
-
+    /**
+     * Get the book by book id
+     * @param id
+     * @return
+     */
     @Override
     public Optional<Book> get(UUID id) {
         Set<Book> books = getAll();
@@ -75,6 +82,10 @@ public class BookDao implements Dao<Book> {
         return Optional.empty();
     }
 
+    /**
+     * get / listing all books
+     * @return
+     */
     @Override
     public Set<Book> getAll() {        
         NavigableSet<Book> books = new TreeSet<>(new BookComparatorByBookTitle() );
@@ -110,7 +121,11 @@ public class BookDao implements Dao<Book> {
         return books;
     }
     
-     public ArrayList<Book> getAllByTitleAndAuthor() 
+    /**
+     * get / listing all books organized by title and author last name
+     * @return
+     */
+    public ArrayList<Book> getAllByTitleAndAuthor() 
      {  
          
          Set<Book> books = getAll();
@@ -125,7 +140,13 @@ public class BookDao implements Dao<Book> {
            return sortedBooks;
      }
      
-     public ArrayList<Book> getAllByTitleOrAuthors(String title, String authorsLastName)
+    /**
+     * get all book by title or author 's last name
+     * @param title
+     * @param authorsLastName
+     * @return
+     */
+    public ArrayList<Book> getAllByTitleOrAuthors(String title, String authorsLastName)
      {
          
          //4) Search for a specific book by title and/or author name
@@ -160,29 +181,13 @@ public class BookDao implements Dao<Book> {
         }         
          return booksRet;
          
-         /*
-         Set<Book> books = (Set<Book>) getAll().stream()
-                 .filter(book -> title.equals(book.getBookTitle()))
-                 .findAny()
-                 .orElse(null);
-         
-          return books;
-         */
-         
-        
-         
-         
      }
          
-    public Iterator<Book> getAllDesc() 
-    { 
-        TreeSet<Book> books = new TreeSet<>(new BookComparatorByBookTitle() );        
-        books.addAll(getAll());
-        NavigableSet<Book> booksDesc = books.descendingSet();
-        Iterator<Book> iterator = booksDesc.iterator();
-        return iterator;
-    }
-
+    /**
+     * saving the new book
+     * @param g
+     * @return
+     */
     @Override
     public Boolean save(Book g) {
         
@@ -209,15 +214,4 @@ public class BookDao implements Dao<Book> {
         
         return true;
     }
-
-    @Override
-    public void update(Book g, String[] infos) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void delete(Book g) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
 }

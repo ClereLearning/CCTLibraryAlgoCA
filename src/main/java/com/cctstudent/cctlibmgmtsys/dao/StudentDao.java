@@ -30,16 +30,26 @@ import java.util.stream.Collectors;
  *
  * @author 2022057 Marliclere Santos
  */
-
- class StudentComparatorByName implements Comparator<Student>{
+// avoiding duplication by email
+ class StudentComparatorByEmail implements Comparator<Student>{
 
     @Override
     public int compare(Student s1, Student s2) {  
-        return s1.getFirstName().compareTo(s2.getFirstName());
+        return s1.getEmail().compareTo(s2.getEmail());
     }    
 }
+
+/**
+ *
+ * @author Clere
+ */
 public class StudentDao implements Dao<Student> {
 
+    /**
+     * get the student by internal ID
+     * @param id
+     * @return
+     */
     @Override
     public Optional<Student> get(UUID id) {
         Set<Student> students = getAll();
@@ -59,8 +69,32 @@ public class StudentDao implements Dao<Student> {
          return Optional.empty();
     }
     
+    /**
+     * get the student by email
+     * @param email
+     * @return
+     */
     
-      public Optional<Student> getStudentId(String studentId) {
+    public Optional<Student> getByEmail(String email) {
+        Set<Student> students = getAll();        
+        for (Student student : students) {            
+            if(!email.toString().isEmpty())
+            {
+                if(student.getEmail().toLowerCase().equals(email.toLowerCase()))
+                {                    
+                    return Optional.of(student);                    
+                }            
+            }
+        }                  
+         return Optional.empty();
+    }
+    
+    /**
+     * get the student by Student ID
+     * @param studentId
+     * @return
+     */
+    public Optional<Student> getStudentId(String studentId) {
         Set<Student> students = getAll();
         //Optional<Student> studentRet = null;
         for (Student student : students) {            
@@ -81,9 +115,13 @@ public class StudentDao implements Dao<Student> {
          return Optional.empty();
     }
 
+    /**
+     * get / list all students
+     * @return
+     */
     @Override
     public Set<Student> getAll() {
-        NavigableSet<Student> students = new TreeSet<>(new StudentComparatorByName() );
+        NavigableSet<Student> students = new TreeSet<>(new StudentComparatorByEmail() );
         
         try{
             
@@ -110,17 +148,22 @@ public class StudentDao implements Dao<Student> {
                 Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(BookDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return students;
     }
 
+    /**
+     * saving a new student
+     * @param g
+     * @return
+     */
     @Override
     public Boolean save(Student g) {
         
         Set<Student> students = getAll();
-        if(students.add(g)) //testing if the book already exists
+        if(students.add(g)) //testing already exists?
         {
             String filePath = FilesPath + FileNameStudent;
             File file = new File(filePath);
@@ -143,7 +186,13 @@ public class StudentDao implements Dao<Student> {
         return true;
     }
 
-    public ArrayList<Student> getAllByTitleOrAuthors(String firstName, String studentID)
+    /**
+     * get / list all student by firstname or Student ID
+     * @param firstName
+     * @param studentID
+     * @return
+     */
+    public ArrayList<Student> getAllStudentByFirstNameOrID(String firstName, String studentID)
     {         
         // 6) Search for a specific student by name and/or ID
         Set<Student> students = getAll();
@@ -177,6 +226,10 @@ public class StudentDao implements Dao<Student> {
          return studentsRet;        
      }
     
+    /**
+     * get / list all student ordered by first and last names
+     * @return
+     */
     public ArrayList<Student> getAllOrderedByNames() 
     {  
          
@@ -191,17 +244,4 @@ public class StudentDao implements Dao<Student> {
                  //.collect(collector)
            return sortedStudents;
     }
-    
-    @Override
-    public void update(Student g, String[] infos) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void delete(Student g) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    
-    
 }

@@ -10,9 +10,7 @@ import java.util.*;
  */
 public interface Dao<T> 
 {
-    Optional<T> get(UUID  id);
-    Set<T> getAll();
-    Boolean save(T g);
-    void update(T g, String[] infos);
-    void delete(T g);    
+    Optional<T> get(UUID  id); //getting a specific record by ID - optional avoiding pointer null exception
+    Set<T> getAll(); // return all from file
+    Boolean save(T g);  //g about generics 
 }

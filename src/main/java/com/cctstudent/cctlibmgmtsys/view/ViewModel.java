@@ -8,10 +8,12 @@ import static com.cctstudent.cctlibmgmtsys.constants.Constants.BorrowingDays;
 import com.cctstudent.cctlibmgmtsys.dao.BookDao;
 import com.cctstudent.cctlibmgmtsys.dao.BookReturnedDao;
 import com.cctstudent.cctlibmgmtsys.dao.BorrowingDao;
+import com.cctstudent.cctlibmgmtsys.dao.EmployeeDao;
 import com.cctstudent.cctlibmgmtsys.dao.StudentDao;
 import com.cctstudent.cctlibmgmtsys.model.Book;
 import com.cctstudent.cctlibmgmtsys.model.BookReturned;
 import com.cctstudent.cctlibmgmtsys.model.Borrowing;
+import com.cctstudent.cctlibmgmtsys.model.Employee;
 import com.cctstudent.cctlibmgmtsys.model.Student;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +29,9 @@ import java.util.UUID;
  */
 public class ViewModel {
     
-    
+    /**
+     * List all books by title and/or author name alphabetical order
+     */
     public static void ListAllBook()
     {
         //5) List all books by title and/or author name alphabetical order.
@@ -47,7 +51,11 @@ public class ViewModel {
         }
     }
     
-    
+    /**
+     * Search for a specific book by title and/or author name
+     * @param title
+     * @param authorsLastName
+     */
     public static void ListAllBooksByTitleOrAuthors(String title, String authorsLastName)
     {
         //4) Search for a specific book by title and/or author name
@@ -67,6 +75,15 @@ public class ViewModel {
             
     }
     
+    /**
+     * Register a Student 
+     * @param firstName
+     * @param lastName
+     * @param email
+     * @param address
+     * @param studentID
+     * @return
+     */
     public static Boolean SaveStudent (String firstName, String lastName, String email, String address, String studentID) {
         
        // 2) Register a Student 
@@ -95,18 +112,34 @@ public class ViewModel {
            System.out.println("Student ID is required");
            return false;
        }
-        StudentDao instance = new StudentDao();       
-        UUID id = UUID.randomUUID();
-        return instance.save(new Student(id, firstName, lastName, email, address,studentID));
+       
+        StudentDao studentDao = new StudentDao();  
+       
+       Optional<Student> studentOpt = studentDao.getByEmail(email);
+        Student student = studentOpt.isEmpty()?null:studentOpt.get();  
+        
+        if (student == null){            
+            UUID id = UUID.randomUUID();
+            return studentDao.save(new Student(id, firstName, lastName, email, address,studentID));        
+        }else{
+            System.out.println("Student already exists");
+            return false;
+        }                 
+        
     }
     
+    /**
+     * Search for a specific student by name and/or ID
+     * @param firstName
+     * @param studentID
+     */
     public static void ListAllStudentByFirstNameOrID(String firstName, String studentID)
     {
         //6) Search for a specific student by name and/or ID
         
         System.out.println("Search for a specific student by name and/or ID");
         StudentDao instance = new StudentDao();        
-        ArrayList<Student> result = instance.getAllByTitleOrAuthors(firstName,studentID );
+        ArrayList<Student> result = instance.getAllStudentByFirstNameOrID(firstName,studentID );
         if(result!=null)
         {            
             for( Student s: result)
@@ -118,6 +151,9 @@ public class ViewModel {
         }            
     }
     
+    /**
+     * List all students by alphabetical name and/or ID order. 
+     */
     public static void ListAllStudent()
     {
         //7) List all students by alphabetical name and/or ID order.        
@@ -135,25 +171,40 @@ public class ViewModel {
         }
     }
     
-    public Optional<Student> GetStudentByStudentID (String studentID )
+    /**
+     * Returning Student by ID
+     * @param studentID
+     * @return
+     */
+    private static Student GetStudentByStudentID (String studentID )
     {
-        StudentDao studentDao = new StudentDao();
-        Optional<Student> student = studentDao.getStudentId(studentID);
+        StudentDao studentDao = new StudentDao();        
+        Optional<Student> studentOpt = studentDao.getStudentId(studentID.trim());
+        Student student = studentOpt.isEmpty()?null:studentOpt.get();        
         return student;   
     }
     
-    public static Boolean ExistStudentByStudentID (String studentID )
+    /**
+     * Verify if the student exists by ID
+     * @param studentID
+     * @return
+     */
+    private static Boolean ExistStudentByStudentID (String studentID )
     {
-        StudentDao studentDao = new StudentDao();
-        Optional<Student> student = studentDao.getStudentId(studentID);
-        if(student!=null)
-        {
-            return true;
-        }else{
+        Student student = GetStudentByStudentID(studentID);
+         if(student==null)
+        {    
             return false;
-        }        
+        }else{
+            return true;
+         }    
     }
     
+    /**
+     * Register that a student has borrowed a book
+     * @param studentID
+     * @param bookID
+     */
     public static void BorrowingRegister(String studentID , String bookID )
     {
         //8) Register that a student has borrowed a book 
@@ -168,38 +219,63 @@ public class ViewModel {
             System.out.println("Book ID does not exists. Please verify.");
             return;
         }
-        StudentDao studentDao = new StudentDao();
-        //Optional<Student> student = studentDao.get(UUID.fromString(studentID.trim()));
-        Optional<Student> studentOpt = studentDao.getStudentId(studentID.trim());
-        Student student = studentOpt.isEmpty()?null:studentOpt.get();
-       
+        StudentDao studentDao = new StudentDao();        
+        Student student = GetStudentByStudentID(studentID);
+        
+        
          if(student==null)
         {
             System.out.println("Student ID does not exists. Please verify.");
             return;
         }
+         
+         
+        //Checking if the book is available
+        UUID idBook = UUID.fromString(bookID);
+        ArrayList<Borrowing> resultB = borrowingDao.getAllByBookID(idBook);
+        
+        long borrowings = 0;
+        if(resultB!=null)
+        {        
+            borrowings = resultB.size();            
+        }        
+        
+        BookReturnedDao bookReturnedDao = new BookReturnedDao();
+        ArrayList<BookReturned> resultR = bookReturnedDao.getAllByBookID(idBook);
+        
+       
+        
+        long returneds = 0;
+        if(resultR!=null)
+        {        
+            returneds = resultR.size();            
+        }
+        
+        // System.out.println("b :" + borrowings);
+        //System.out.println("r :" + returneds);
+              
+        if(borrowings > returneds )
+        {
+            System.out.println("Book not available. Utlize a waiting List menu 9 ");
+            return;            
+        }
+        
+        
+        
         
         Boolean ret = false;        
         if((book!=null) && (student!=null))
         {
-            System.out.println("Ready to save the Borrowing");
-            UUID id = UUID.randomUUID();            
-            UUID idBook = UUID.fromString(bookID.trim());
+            //System.out.println("Ready to save the Borrowing");
+            UUID id = UUID.randomUUID();                        
             UUID idStudent = UUID.fromString(student.getId().toString());
-            
-            //System.out.println(bookID.trim());
-            //System.out.println(UUID.fromString(student.getId().toString()));
-            //System.out.println(bookID.trim());
             
             LocalDate ReturnDate = LocalDate.now();
             ReturnDate = ReturnDate.plusDays(BorrowingDays);
             LocalDate StartDate = LocalDate.now();
-            //StartDate = ReturnDate;
+            
             Borrowing b = new Borrowing(id, idBook ,idStudent, idStudent,StartDate,LocalTime.now(),ReturnDate, false,LocalDateTime.now());
-            
-            
-            
-            //Borrowing b = new Borrowing(id,UUID.fromString(bookID.trim()), UUID.fromString(student.getId().toString()),UUID.fromString(student.getId().toString()),LocalDate.now(),LocalTime.now(),LocalDate.now(), false,LocalDateTime.now());
+           
             ret = borrowingDao.save(b);           
         }
         
@@ -211,16 +287,18 @@ public class ViewModel {
         }
     }         
     
+    /**
+     * Register that a student has returned a book
+     * @param StudentID
+     * @param borrowingID
+     */
     public static void BookReturnRegister(String StudentID, String borrowingID)
     {
          //10) Register that a student has returned a book.
         //String studentID =  "q1w2e3";  //"a1s2d3";
-        //String borrowingID = "d3003cb6-4f0f-410d-9550-a228dd349785";        
+        //String borrowingID = "d3003cb6-4f0f-410d-9550-a228dd349785";    
         
-        StudentDao studentDao = new StudentDao();
-        //Optional<Student> student = studentDao.get(UUID.fromString(studentID.trim()));
-        Optional<Student> studentOpt = studentDao.getStudentId(StudentID.trim());
-        Student student = studentOpt.isEmpty()?null:studentOpt.get();
+        Student student = GetStudentByStudentID(StudentID);
        
          if(student==null)
         {
@@ -277,7 +355,7 @@ public class ViewModel {
             
             
             BookReturnedDao BookReturnedDao = new BookReturnedDao();  
-            Set<BookReturned> booksReturned = BookReturnedDao.getAll();
+            ArrayList<BookReturned> booksReturned = BookReturnedDao.getAll();
            
             if(booksReturned.add(b)) // already exists?
             {       
@@ -290,6 +368,10 @@ public class ViewModel {
         }
     }
     
+    /**
+     * For a specific student, list the books that they have borrowed
+     * @param StudentId
+     */
     public static void getBooksBorrowingByStudent( String StudentId)
     {
         //11) For a specific student, list the books that they have borrowed
@@ -314,18 +396,180 @@ public class ViewModel {
         
         if(result!=null)
         {        
+            if(result.size()==0)
+            {
+                System.out.println("Does not exists result for this Student.");
+                return;
+            }
+            
             for( Borrowing b: result)
             {
                 Optional<Book> BookOpt = bookDao.get(b.getBookId());
                 book = BookOpt.isEmpty()?null:BookOpt.get();                
                 if(book!=null)
                 {
-                     System.out.println(b.getStartDate() + " - " + book);
+                     System.out.println( " Date: "+ b.getStartDate() + " - Borrowing ID: " + b.getId() + " - " +  book);
                 }               
             }
         }else{
             System.out.println("Not found");        
         }        
+        
+    }
+    
+    /**
+     * Adding Book to Waiting List
+     * @param studentID
+     * @param bookID
+     */
+    public static void WaitingListRegister(String studentID, String bookID)
+    {
+        //9) Adding Book to Waiting List   
+        
+        
+        StudentDao studentDao = new StudentDao();        
+        Optional<Student> studentOpt = studentDao.getStudentId(studentID.trim());
+        Student student = studentOpt.isEmpty()?null:studentOpt.get();
+       
+         if(student==null)
+        {
+            System.out.println("Student ID does not exists. Please verify.");
+            return;
+        }     
+        UUID idStudent = student.getId();
+        
+        
+        BorrowingDao borrowingDao = new BorrowingDao();        
+        
+        UUID idBook = UUID.fromString(bookID);
+        ArrayList<Borrowing> resultB = borrowingDao.getAllByBookID(idBook);
+        
+        long borrowings = 0;
+        if(resultB!=null)
+        {        
+            borrowings = resultB.size();            
+        }        
+        
+        BookReturnedDao bookReturnedDao = new BookReturnedDao();
+        ArrayList<BookReturned> resultR = bookReturnedDao.getAllByBookID(idBook);
+        
+        long returneds = 0;
+        if(resultR!=null)
+        {        
+            returneds = resultR.size();            
+        }
+              
+        if(borrowings > returneds )
+        {
+            System.out.println("Book not available. Lets enter in a waiting List");
+            System.out.println("Waiting List - it is only a simulation - sorry for now");
+            //go for waiting list
+        }else{
+            System.out.println("Book is available. Make a regular borrowing menu 8 ");
+        }       
+        
+    }
+    
+    /**
+     * For a specific student, list the books that they have borrowed
+     * @param StudentId
+     */
+    public static void getBooksReturnedByStudent( String StudentId)
+    {
+        //11) For a specific student, list the books that they have borrowed
+        StudentDao studentDao = new StudentDao();        
+        Optional<Student> studentOpt = studentDao.getStudentId(StudentId.trim());
+        Student student = studentOpt.isEmpty()?null:studentOpt.get();
+       
+        if(student==null)
+        {
+            System.out.println("Student ID does not exists. Please verify.");
+            return;
+        }     
+
+        UUID idStudent = student.getId();
+        BookReturnedDao bookReturnedDAO = new BookReturnedDao();
+        
+        
+         
+        ArrayList<BookReturned> result = bookReturnedDAO.getAllByStudent(idStudent);        
+        Book book = null;
+        BookDao bookDao = new BookDao();
+        
+        
+        if(result!=null)
+        {   
+            
+            if(result.size()==0)
+            {
+                System.out.println("Does not exists result for this Student.");
+                return;
+            }
+            
+            for( BookReturned b: result)
+            {
+                Optional<Book> BookOpt = bookDao.get(b.getBookId());
+                book = BookOpt.isEmpty()?null:BookOpt.get();                
+                if(book!=null)
+                {
+                     System.out.println( " Date: "+ b.getReturnedDate() + " - Retuned ID: " + b.getId() + " - Borrowing ID: " + b.getBorrowingId() + " - " +  book);
+                }               
+            }
+            
+            
+            
+        }else{
+            System.out.println("Not found");        
+        }        
+        
+    }
+    
+    /**
+     * Register a Employee
+     * @param firstName
+     * @param lastName
+     * @param email
+     * @param password
+     * @return
+     */
+    public static Boolean SaveEmployee (String firstName, String lastName, String email, String password) {
+        
+       // 2) Register a Employee 
+       System.out.println("Registering a Employee"); 
+       
+       if(firstName.trim().length()<1){
+           System.out.println("First Name is required");
+           return false;
+       }
+       
+        if(lastName.trim().length()<1){
+           System.out.println("Last Name is required");
+           return false;
+       }
+        
+         if(email.trim().length()<1){
+           System.out.println("Email is required");
+           return false;
+       }
+       
+       if(password.trim().length()<1){
+           System.out.println("Password is required");
+           return false;
+       }       
+      
+        EmployeeDao employeeDao = new EmployeeDao();     
+        
+        
+        Optional<Employee> employeeOpt = employeeDao.getByEmail(email);
+        Employee employee = employeeOpt.isEmpty()?null:employeeOpt.get();  
+        
+        if (employee == null){            
+            UUID id = UUID.randomUUID();
+            return employeeDao.save(new Employee(id, firstName, lastName, email, password));
+        }else{
+           System.out.println("Employee already exists ");
+           return false;
+        }
         
     }
     

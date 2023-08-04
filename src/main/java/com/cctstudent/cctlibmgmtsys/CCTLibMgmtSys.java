@@ -26,6 +26,7 @@ public class CCTLibMgmtSys {
             {
                 case 1:                                         
                     System.out.println("Option 1 ");
+                    Option1();
                     break;
                 case 2:                     
                     System.out.println("Option 2 ");
@@ -56,6 +57,7 @@ public class CCTLibMgmtSys {
                     break;
                  case 9:                     
                     System.out.println("Option 9 ");
+                    Option9();
                     break;
                  case 10:                     
                     System.out.println("Option 10 ");
@@ -64,8 +66,12 @@ public class CCTLibMgmtSys {
                  case 11:                     
                     System.out.println("Option 11 ");
                     Option11();
-                    break;                    
+                    break;                                        
                  case 12:                     
+                    System.out.println("Option 12 ");
+                    Option12();
+                    break;                    
+                 case 13:                     
                     System.out.println("Option 12 ");
                     System.out.println("Exiting Thank you ");
                     break;
@@ -73,7 +79,7 @@ public class CCTLibMgmtSys {
                     System.out.println("Invalid Option ");
                     break;
             }
-        }while(menuOption!=12);
+        }while(menuOption!=13);
     }
     
      public static int showMenu(Scanner input)
@@ -83,16 +89,17 @@ public class CCTLibMgmtSys {
         System.out.println("********************Options Select one******************************");        
         System.out.println("1) Register a Employee                                              ");
         System.out.println("2) Register a Student                                               ");
-        System.out.println("3) Register a Book                                                  ");
+        System.out.println("3) Register a Book - is not available                               ");
         System.out.println("4) Search for a specific book by title and/or author name.          ");
         System.out.println("5) List all books by title and/or author name alphabetical order.   ");
         System.out.println("6) Search for a specific student by name and/or ID.                 ");
         System.out.println("7) List all students by alphabetical name and/or ID order.          ");
         System.out.println("8) Register that a student has borrowed a book                      ");
-        System.out.println("9) Adding Book to Waiting List                                      ");
+        System.out.println("9) Adding Book to Waiting List - simulation - resource not available ");
         System.out.println("10) Register that a student has returned a book.                     ");
         System.out.println("11) For a specific student, list the books that they have borrowed.  ");
-        System.out.println("12) Exit                                                             ");
+        System.out.println("12) For a specific student, list the books that they have returned.  ");
+        System.out.println("13) Exit                                                             ");
         System.out.println("********************************************************************");
         
         // testing if it is a number
@@ -104,6 +111,35 @@ public class CCTLibMgmtSys {
            return invalidOption;
         }
     }
+     
+     
+   public static void Option1()
+     {
+         //1) Register a Employee  
+         
+        Scanner input = new Scanner(System.in);
+                
+        System.out.println("Enter the employee First Name:");
+        String firstName = input.next();
+        
+        System.out.println("Enter the employee Last Name:");
+        String lastName = input.next(); 
+               
+        System.out.println("Enter the employee email:");
+        String email = input.next();
+        
+        System.out.println("Enter the employee password:");
+        String password = input.next();               
+       
+        if(ViewModel.SaveEmployee( firstName,  lastName,  email,  password))
+        {            
+            System.out.println("Employee successfully registered"); 
+        }else{
+             System.out.println("Employee was not registered"); 
+        }
+        
+     }
+     
     public static void Option2()
      {
         Scanner input = new Scanner(System.in);
@@ -238,6 +274,42 @@ public class CCTLibMgmtSys {
         ViewModel.BorrowingRegister(studentID.trim(),bookID.trim());
      }
      
+     public static void Option9()
+     {
+         //9) Adding Book to Waiting List 
+         
+         
+        System.out.println("Adding Book to Waiting List for a specific Student");
+        
+        Scanner input = new Scanner(System.in);
+        
+        System.out.println("Enter the book ID");
+        String bookID = input.next();
+        
+        System.out.println("Enter Student ID");
+        String studentID = input.next(); 
+        
+        if(bookID.trim().length()<1)
+        {
+            System.out.println("Book ID is required");
+            return;
+        }    
+        
+        if(bookID.trim().length()!=36)
+        {
+            System.out.println("Book ID is not correct");
+            return;
+        }        
+        
+        if(studentID.trim().length()<1)
+        {
+            System.out.println("Student ID is required");
+            return;
+        }  
+        
+        ViewModel.WaitingListRegister( studentID, bookID);
+     }
+     
      public static void Option10()
      {
          //10) Register that a student has returned a book.
@@ -287,9 +359,24 @@ public class CCTLibMgmtSys {
         }           
         
         ViewModel.getBooksBorrowingByStudent(studentID.trim());
+     }
+     
+     public static void Option12()
+     {
+         //11) For a specific student, list the books that they have borrowed
+        System.out.println("Listing the books returned by Student");
+        Scanner input = new Scanner(System.in);                         
         
-         
-         
+        System.out.println("Enter Student ID");
+        String studentID = input.next(); 
+        
+        if(studentID.trim().length()<1)
+        {
+            System.out.println("Student ID is required");
+            return;
+        }           
+        
+        ViewModel.getBooksReturnedByStudent(studentID.trim());
      }
      
 }

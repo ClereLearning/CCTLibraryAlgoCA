@@ -11,6 +11,7 @@ import com.cctstudent.cctlibmgmtsys.model.Student;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -69,19 +70,6 @@ public class BorrowingDaoIT {
         // TODO review the generated test code and remove the default call to fail.
     }
 
-    /**
-     * Test of getAll method, of class BorrowingDao.
-     */
-    @Test
-    public void testGetAll() {
-        System.out.println("getAll");
-        BorrowingDao instance = new BorrowingDao();
-        //Set<Borrowing> expResult = null;
-        Set<Borrowing> result = instance.getAll();
-        //assertEquals(expResult, result);
-        assertEquals( true, (0 < result.size()), "error " + result.size());
-        
-    }
 
     /**
      * Test of save method, of class BorrowingDao.
@@ -147,7 +135,7 @@ public class BorrowingDaoIT {
             b = new Borrowing(id, idBook ,idStudent, idStudent,StartDate,LocalTime.now(),ReturnDate, false,LocalDateTime.now());
             //ret = borrowingDao.save(b);              
           
-            Set<Borrowing> Borrowings = borrowingDao.getAll();            
+            ArrayList<Borrowing> Borrowings = borrowingDao.getAll();            
             System.out.println("Size " + Borrowings.size());
             if(Borrowings.add(b)) // already exists?
             {
@@ -168,31 +156,5 @@ public class BorrowingDaoIT {
        
     }
 
-    /**
-     * Test of update method, of class BorrowingDao.
-     */
-    @Test
-    public void testUpdate() {
-        System.out.println("update");
-        Borrowing g = null;
-        String[] infos = null;
-        BorrowingDao instance = new BorrowingDao();
-        instance.update(g, infos);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of delete method, of class BorrowingDao.
-     */
-    @Test
-    public void testDelete() {
-        System.out.println("delete");
-        Borrowing g = null;
-        BorrowingDao instance = new BorrowingDao();
-        instance.delete(g);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
+        
 }

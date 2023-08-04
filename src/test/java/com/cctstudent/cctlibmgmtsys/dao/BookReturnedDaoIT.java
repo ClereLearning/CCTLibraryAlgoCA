@@ -12,6 +12,7 @@ import com.cctstudent.cctlibmgmtsys.model.Student;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -68,7 +69,7 @@ public class BookReturnedDaoIT {
     public void testGetAll() {
         System.out.println("getAll");
         BookReturnedDao instance = new BookReturnedDao();        
-        Set<BookReturned> result = instance.getAll();                           
+        ArrayList<BookReturned> result = instance.getAll();                           
         assertEquals( true, ( result.size()>0), "error " + result.size());
     }
 
@@ -165,9 +166,9 @@ public class BookReturnedDaoIT {
             
             
             BookReturnedDao BookReturnedDao = new BookReturnedDao();  
-            Set<BookReturned> booksReturned = BookReturnedDao.getAll();            
+            ArrayList<BookReturned> booksReturned = BookReturnedDao.getAll();            
             System.out.println("Size " + booksReturned.size());
-            if(booksReturned.add(b)) // already exists?
+            if(booksReturned.add(b)) // already exists? I was utilizing Set before now it does not make sense
             {       
                 BookReturnedDao instance = new BookReturnedDao(); 
                 instance.save(b );
@@ -186,33 +187,6 @@ public class BookReturnedDaoIT {
       
         // TODO review the generated test code and remove the default call to fail.
        // fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of update method, of class BookReturnedDao.
-     */
-    @Test
-    public void testUpdate() {
-        System.out.println("update");
-        BookReturned g = null;
-        String[] infos = null;
-        BookReturnedDao instance = new BookReturnedDao();
-        instance.update(g, infos);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of delete method, of class BookReturnedDao.
-     */
-    @Test
-    public void testDelete() {
-        System.out.println("delete");
-        BookReturned g = null;
-        BookReturnedDao instance = new BookReturnedDao();
-        instance.delete(g);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }

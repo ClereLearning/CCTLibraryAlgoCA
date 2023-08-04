@@ -73,15 +73,6 @@ public class BookDaoIT {
         
     }
     
-     @Test
-    public void testGetAllDesc() {
-        System.out.println("getAllDesc");
-        BookDao instance = new BookDao();
-        //Set<Book> expResult = null;
-        Iterator<Book> result = instance.getAllDesc();
-        assertEquals( true, result.hasNext(), "GetAllDesc error " + result.hasNext());        
-    }
-    
     
 
     /**
@@ -99,33 +90,6 @@ public class BookDaoIT {
         assertTrue(instance.save(g),"Fail testSave True");        
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of update method, of class BookDao.
-     */
-    @Test
-    public void testUpdate() {
-        System.out.println("update");
-        Book g = null;
-        String[] infos = null;
-        BookDao instance = new BookDao();
-        instance.update(g, infos);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of delete method, of class BookDao.
-     */
-    @Test
-    public void testDelete() {
-        System.out.println("delete");
-        Book g = null;
-        BookDao instance = new BookDao();
-        instance.delete(g);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }

@@ -18,6 +18,14 @@ public class Employee {
     private String email;
     private String password;
 
+    public Employee(UUID id, String FirstName, String LastName, String email, String password) {
+        this.id = id;
+        this.FirstName = FirstName;
+        this.LastName = LastName;
+        this.email = email;
+        this.password = password;
+    }
+    
     public UUID getId() {
         return id;
     }
@@ -87,5 +95,13 @@ public class Employee {
         }
         return Objects.equals(this.email, other.email);
     }
+
+    @Override
+    public String toString() {
+        return "Employee{" + "id=" + id + ", FirstName=" + FirstName + ", LastName=" + LastName + ", email=" + email + ", password=" + password + '}';
+    }
     
+    public String toDatabase() {
+        return  id + "," + FirstName + "," + LastName + "," + email + "," + password;
+    }
 }
